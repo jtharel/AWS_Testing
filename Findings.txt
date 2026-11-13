@@ -157,6 +157,7 @@ Search for sensitive info in S3 buckets or downloaded files. Use environment var
 
 Other scripts to help with S3 content:
 	scan_zips.py -> can be used to scan zip file on S3 buckets or Lambda source code
+		python scan_zips.py path\to\files\
 
 	browse_vhdx.py -> browse vhdx files found on S3 buckets
 		python browse_vhdx.py ls /path
@@ -447,6 +448,7 @@ Other Commands/Scripts:
 	powershell -c "Get-ChildItem *.bat | ForEach-Object { (Get-Content $_) -replace 'PROFILE_NAME','NEW_PROFILE_NAME' | Set-Content $_ }"
 
 	scan_zips.py -> can be used to scan zip file on S3 buckets or Lambda source code
+		python scan_zips.py path\to\files\
 
 	browse_vhdx.py -> browse vhdx files found on S3 buckets
 		python browse_vhdx.py ls /path

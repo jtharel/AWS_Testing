@@ -2,7 +2,7 @@
 AWS Pen Testing Scripts
 
 ====================================================================================
-
+ 
 Check for external exposure for the environment
 
 Windows Command: 

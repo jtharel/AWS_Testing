@@ -1,5 +1,4 @@
-# AWS_Testing
-AWS Pen Testing Scripts
+AWS testing broken out by finding:
 
 ====================================================================================
  

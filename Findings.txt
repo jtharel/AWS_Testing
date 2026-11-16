@@ -469,12 +469,13 @@ Python:
 		Check for ECR public repos
 
 ====================================================================================
-RDS
+Weak RDS Configuration 
 
 Python:
 	check_rds.py
 		List RDS instances, check for rds.force_ssl
 
+	
 
 ====================================================================================
 Finding: IAM Privilege Escalation

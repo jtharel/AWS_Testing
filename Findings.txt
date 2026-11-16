@@ -5,6 +5,8 @@ AWS Pen Testing Scripts
  
 Check for external exposure for the environment
 
+Linux Command:
+	check_external_exposure.sh
 Windows Command: 
 	check_external_exposure.bat
 
@@ -17,7 +19,9 @@ Windows Command:
 
 	EC2 -> save IDs to ec2_instance_ids.txt
 
-	EC2 instances, when you have the ID use: get_ec2_ips.bat 
+	EC2 instances, when you have the ID use: 
+		get_ec2_ips.sh
+		get_ec2_ips.bat 
 		
 Using all the above to build IPs.txt file
 
@@ -32,6 +36,8 @@ nmap -p22 -oA ssh_audit -sV --script ssh2-enum-algos,ssh-hostkey,ssh-auth-method
 ====================================================================================
 Finding: Access Policies Assigned Directly to Users
 
+Linux Command:
+	list_user_policies.sh
 Windows Command: 
 	list_user_policies.bat
 
@@ -41,19 +47,21 @@ Evidence:
 	aws iam get-user-policy --user-name abrigo-user-mgn --policy-name abrigo-user-mgn --profile PROFILE_NAME
 
 	List assigned Inline policies by user name
-	aws iam list-user-policies --user-name <USERNAME> --profile <PROFILE>
+	aws iam list-user-policies --user-name <USERNAME> --profile PROFILE_NAME
 
 ----------------------------------------
 	Attached Managed Policy Details:
 	aws iam get-policy-version --policy-arn "arn:aws:iam::179507212702:policy/abrigo-policy-moveit-s3-full-access" --version-id v1 --profile PROFILE_NAME
 
 	List attached managed polcies by user:
-	aws iam list-attached-user-policies --user-name <USERNAME> --profile <PROFILE>
+	aws iam list-attached-user-policies --user-name <USERNAME> --profile PROFILE_NAME
 
 
 ====================================================================================
 Finding: IMDSv2 is Not Required
 
+Linux command:
+	imdsv2.sh
 Windows command: 
 	imdsv2.bat
 		Nothing returned means no IMDSv1
@@ -79,7 +87,8 @@ Finding: Overly Permissive Access to Secrets Manager
 Python:	
 	python check_secretsmanager_access.py
 		shows all users with secretsmanager:GetSecretValue
-
+Linux command:
+	dump_secrets.sh
 Windows command:	
 	dump_secrets.bat
 		dumps all secrets as logged in user
@@ -103,9 +112,13 @@ Python:
 		Takes a long time
 
 Evidence:
-	aws ec2 describe-instance-attribute --instance-id <INSTANCE ID> --attribute userData --profile  <PROFILE> --output text --query "UserData.Value" > ud.txt
-	certutil -decode ud.txt ud_decoded.txt
-	type ud_decoded.txt
+	aws ec2 describe-instance-attribute --instance-id <INSTANCE ID> --attribute userData --profile  PROFILE_NAME --output text --query "UserData.Value" > ud.txt
+	Linux:
+		base54 -d ud.txt > ud_decoded.txt
+		cat ud_decoded.txt
+	Windows:
+		certutil -decode ud.txt ud_decoded.txt
+		type ud_decoded.txt
 
 
 ====================================================================================
@@ -114,14 +127,21 @@ Finding: Sensitive data Stored Insecurely in Cloud Storage Platform
 AWS command:	
 	aws s3api list-buckets --query "Buckets[].Name" --output table --profile PROFILE_NAME > buckets.txt
 		remove lines and spaces from buckets.txt so it works with the windows command below
-	
+
+Linux command:
+	ls_buckets.sh > ls_buckets.txt
+		review contents of s3 buckets for files to download and review
+
+	public_buckets.sh > public_buckets.txt
+
 Windows command:	
 	ls_buckets.bat > ls_buckets.txt
 		review contents of s3 buckets for files to download and review
 	
 	public_buckets.bat > public_buckets.txt
 
-	See if you can access public buckets:
+
+See if you can access public buckets:
 	grep -i URI public_buckets.txt
 
 
@@ -155,7 +175,7 @@ Search for sensitive info in S3 buckets or downloaded files. Use environment var
 	gitleaks detect --source . --no-git --report-path ./gitleaks-report.csv --report-format csv
 		open in Excel
 
-Other scripts to help with S3 content:
+Other scripts to help with S3 content if you can't mount the file systems and unzip files:
 	scan_zips.py -> can be used to scan zip file on S3 buckets or Lambda source code
 		python scan_zips.py path\to\files\
 
@@ -213,6 +233,8 @@ What "overly permissive" looks like:
 ====================================================================================
 Finding: Logging Not Enabled
 
+Linux command:
+	logging.sh
 Windows command:
 	logging.bat
 
@@ -238,8 +260,10 @@ web console -> IAM Users -> Active Key Age
 ====================================================================================
 Finding: Public Access Enabled (access to S3 buckets and EBS Snapshots)
 
+Linux command:
+	public_sharing.sh (update Account number in script)
 Windows command:
-	public_sharing.bat (update Account number in file)
+	public_sharing.bat (update Account number in script)
 
 Evidence:
 	aws s3control get-public-access-block --account-id 300955724230 --profile PROFILE_NAME
@@ -276,6 +300,8 @@ AWS command:
 ====================================================================================
 Finding: SNS Topics Unencrypted at Rest
 
+Linux command:
+	check_sns_encryption.sh
 Windows command:
 	check_sns_encryption.bat
 	
@@ -287,6 +313,9 @@ Evidence:
 ====================================================================================
 Finding: Insecure Storage of Secrets
 
+Linux command:
+	dump_lambdas.sh > lambda_env_output.txt
+	txt file will have env vars. lambda_code dir has code
 Windows command:
 	dump_lambdas.bat > lambda_env_output.txt
 	txt file will have env vars. lambda_code dir has code
@@ -302,6 +331,8 @@ Check lambda_code directory:
 ====================================================================================
 Finding: Sensitive Information Exposed in CloudFormation Stack Parameters
 
+Linux command:
+	check_cloudformation.sh > cloudformation.txt
 Windows command:
 	check_cloudformation.bat > cloudformation.txt
 
@@ -311,15 +342,17 @@ Finding: Sensitive data Exposed in AWS Parameter Store
 		or
 	AWS Systems Manager (SSM) Data Leakage
 
+Linux command:
+	check_ssm.sh
 Windows command:
 	check_ssm.bat
 
 Evidence:
 	Get list of SSMs:
-	aws ssm describe-parameters --profile <PROFILE> 
+	aws ssm describe-parameters --profile PROFILE_NAME 
 
 	Output of the SSM details:
-	aws ssm get-parameter --name <NAME> --with-decryption --profile <PROFILE>
+	aws ssm get-parameter --name <NAME> --with-decryption --profile PROFILE_NAME
 
 
 ====================================================================================
@@ -345,7 +378,7 @@ Python:
 		Key 2		-> True means their access key is active
 
 Evidence:
-	aws iam list-mfa-devices --user-name <USERNAME> --profile <PROFILE>
+	aws iam list-mfa-devices --user-name <USERNAME> --profile PROFILE_NAME
 
 
 ====================================================================================
@@ -356,17 +389,24 @@ Web Console -> IAM -> Users
 Providing environment variable set for AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY and AWS_SESSION_TOKEN
 this batch file will provide a URL for you to cut and paste into a browser for access to the Web Console
 
+  Linux command:
+	geturl.sh
   Windows command: 
-  geturl.bat
+    geturl.bat
 
 
 ====================================================================================
 Finding: EBS Resources Lack Encryption
 
+Linux command:
+	encrypted_ec2_ebs_volumes.sh
 Windows command:
 	encrypted_ec2_ebs_volumes.bat
-		True -> volume is encrypted
-		Encryption by default is checked as well. If False is returned, this should be a seperate finding
+
+	True -> volume is encrypted
+	
+	Encryption by default is checked as well. If False is returned, this should be a seperate finding
+
 
 Evidence:
 	Check EBS volumes:
@@ -425,16 +465,16 @@ Evidence:
 	aws iam get-role --role-name ROLE_NAME --profile PROFILE_NAME --query "Role.AssumeRolePolicyDocument"
 		returns the AssumeRole action
 
-	aws iam list-attached-role-policies --role-name "<ROLENAME>" --profile <PROFILE>
+	aws iam list-attached-role-policies --role-name "<ROLENAME>" --profile PROFILE_NAME
 		returns attached policies
-	aws iam list-role-policies --role-name "<ROLENAME>" --profile <PROFILE>
+	aws iam list-role-policies --role-name "<ROLENAME>" --profile PROFILE_NAME
 		returns inline? policies	
 
 	Take the Arn from one of the two above commands:
-		aws iam get-policy-version --policy-arn "<POLICY_ARN>" --version-id v1 --profile <PROFILE>
+		aws iam get-policy-version --policy-arn "<POLICY_ARN>" --version-id v1 --profile PROFILE_NAME
 
 	Get the termporary creds:
-	aws sts assume-role --role-arn "arn:aws:iam::123456789:role/TargetRole" --role-session-name "test" --profile <PROFILE>
+	aws sts assume-role --role-arn "arn:aws:iam::123456789:role/TargetRole" --role-session-name "test" --profile PROFILE_NAME
 		That returns temporary credentials (access key, secret key, session token) for the target role. 
 
 	aws configure --profile <PROFILE_ELEVATED>
@@ -460,7 +500,7 @@ Other Commands/Scripts:
 		python browse_vmdk.py cat /path/to/file
 		ptyon broswe_vmdk.py save /path/to/file output.txt
 
-  geturl.bat -> Providing environment variable set for AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY and AWS_SESSION_TOKEN
-  this batch file will provide a URL for you to cut and paste into a browser for access to the Web Console
+  geturl.sh/geturl.bat -> Providing environment variable set for AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY and AWS_SESSION_TOKEN
+  this script will provide a URL for you to cut and paste into a browser for access to the Web Console
 ====================================================================================
 

@@ -454,6 +454,19 @@ Evidence:
 
 
 ====================================================================================
+ECR
+
+check for clear text information in container templates
+does it have pull permissins?
+
+Linux command:
+	check_ecr_repos.sh	(still a work in progress)
+
+
+
+
+
+====================================================================================
 Finding: IAM Privilege Escalation
 
 Python:

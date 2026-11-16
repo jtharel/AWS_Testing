@@ -462,8 +462,18 @@ does it have pull permissins?
 Linux command:
 	check_ecr_repos.sh	(still a work in progress)
 
+Python:
+	python check_ecr.py (still a work in progress)
+		repo details
+		pull permissions
+		Check for ECR public repos
 
+====================================================================================
+RDS
 
+Python:
+	check_rds.py
+		List RDS instances, check for rds.force_ssl
 
 
 ====================================================================================

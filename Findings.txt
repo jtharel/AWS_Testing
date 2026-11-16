@@ -113,7 +113,7 @@ Python:
 Evidence:
 	aws ec2 describe-instance-attribute --instance-id <INSTANCE ID> --attribute userData --profile  PROFILE_NAME --output text --query "UserData.Value" > ud.txt
 	Linux:
-		base54 -d ud.txt > ud_decoded.txt
+		base64 -d ud.txt > ud_decoded.txt
 		cat ud_decoded.txt
 	Windows:
 		certutil -decode ud.txt ud_decoded.txt

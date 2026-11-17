@@ -299,9 +299,9 @@ for db in instances:
     if minor_upgrades:
         latest = minor_upgrades[-1] if minor_upgrades else "N/A"
         print(f"    Available minor upgrades: {len(minor_upgrades)} (latest: {latest})")
-        if len(minor_upgrades) > 3:
+        if len(minor_upgrades) > 1:
             findings["outdated_engine"].append(f"{db_id} ({engine} {engine_ver}, {len(minor_upgrades)} updates behind)")
-            print(f"    ** FINDING: Significantly behind on patches ({len(minor_upgrades)} versions) **")
+            print(f"    ** FINDING: Behind on patches ({len(minor_upgrades)} versions) **")
     else:
         print(f"    Up to date (no minor upgrades available)")
     print()

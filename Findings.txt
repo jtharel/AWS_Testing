@@ -473,9 +473,43 @@ Weak RDS Configuration
 
 Python:
 	check_rds.py
-		List RDS instances, check for rds.force_ssl
 
-	
+
+Evidence:
+
+	Check for SSL/TLS not being enforced (rds.force_ssl is not set):
+	first get the parameter groups in use, then check each one:
+		aws rds describe-db-instances --profile PROFILE_NAME --query "DBInstances[].{Instance:DBInstanceIdentifier,Engine:Engine,ParamGroup:DBParameterGroups[0].DBParameterGroupName}" --output table
+
+	Then for each parameter group:
+	aws rds describe-db-cluster-parameters --db-cluster-parameter-group-name PARAM_GROUP_NAME --profile PROFILE_NAME --query "Parameters[?ParameterName=='rds.force_ssl'].{Name:ParameterName,Value:ParameterValue}" --output table
+
+	For MySQL/MariaDB instances use require_secure_transport instead:
+		aws rds describe-db-cluster-parameters --db-cluster-parameter-group-name default.aurora-mysql5.7 --profile growth_prod --query "Parameters[?ParameterName=='require_secure_transport'].{Name:ParameterName,Value:ParameterValue}" --output table
+
+		- Value = 0 or empty → SSL not enforced (finding)
+		- Value = 1 → SSL enforced (good)
+
+
+	Check for default master username:
+		aws rds describe-db-instances --profile PROFILE_NAME --query "DBInstances[].{Instance:DBInstanceIdentifier,MasterUsername:MasterUsername,Engine:Engine}" --output table
+
+	Check for enhanced monitoring:
+	aws rds describe-db-instances --profile PROFILE_NAME --query "DBInstances[].{ID:DBInstanceIdentifier,MonitoringInterval:MonitoringInterval}" --output table
+
+		- MonitoringInterval = 0 → Enhanced monitoring disabled
+		- MonitoringInterval = 1/5/10/15/30/60 → Enabled, collecting metrics every N seconds
+		- MonitoringRoleArn = None → No IAM role assigned for monitoring
+
+
+	Deletion protection:
+	aws rds describe-db-instances --profile PROFILE_NAME --query "DBInstances[].{Instance:DBInstanceIdentifier,DeletionProtection:DeletionProtection,Engine:Engine,Status:DBInstanceStatus}" --output table
+		False = no deletion protection, anyone with rds:DeleteDBInstance permission can delete it.
+
+
+	Show engine versions:
+		aws rds describe-db-instances --profile PROFILE_NAME --query "DBInstances[].{Instance:DBInstanceIdentifier,Engine:Engine,Version:EngineVersion,AutoUpgrade:AutoMinorVersionUpgrade}" --output table
+
 
 ====================================================================================
 Finding: IAM Privilege Escalation

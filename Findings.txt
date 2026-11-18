@@ -473,7 +473,7 @@ Evidence:
 	aws ecr list-images --repository-name REPO_NAME --profile PROFILE_NAME --query "imageIds[].imageTag" --output json
 
 	Pull image manifest:
-	aws ecr batch-get-image --repository-name REPO_NAME --image-ids imageTag=latest --profile PROFILE_NAME --output json 
+	aws ecr batch-get-image --repository-name REPO_NAME --image-ids imageTag=IMAGE_ID --profile PROFILE_NAME --output json 
 
 	Then extract a layer:
 	aws ecr get-download-url-for-layer --repository-name REPO_NAME --layer-digest sha256:DIGEST_FROM_MANIFEST --profile PROFILE_NAME

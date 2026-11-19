@@ -86,6 +86,7 @@ Finding: Overly Permissive Access to Secrets Manager
 Python:	
 	python check_secretsmanager_access.py
 		shows all users with secretsmanager:GetSecretValue
+		Only look for SECRETS READ ACCESS via wildcard *
 Linux command:
 	dump_secrets.sh
 Windows command:	
@@ -95,6 +96,7 @@ Windows command:
 Evidence:
 	aws secretsmanager get-secret-value --secret-id "SECRET_NAME" --profile PROFILE_NAME
 
+	from the output of the py script, only look at 'SECRETS READ ACCESS via wildcard *' section.
 
 ====================================================================================
 Finding: EBS Volume Lacks Encryption
